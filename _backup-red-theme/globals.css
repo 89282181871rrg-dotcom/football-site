@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0b0b0d;
+  --color-surface: #141417;
+  --color-surface-2: #1c1c21;
+  /* Тонкая линия — только декоративные разделители */
+  --color-line: #2a2a31;
+  /* Граница интерактивных элементов: контраст к фону 3.4:1 (WCAG 1.4.11) */
+  --color-line-strong: #646472;
+
+  --color-ink: #ffffff;
+  --color-muted: #a8a8b3;
+
+  /* Яркий — для текста и акцентов на тёмном (5.4:1) */
+  --color-accent: #ff2e4d;
+  /* Тёмный — только под белый текст на кнопках (4.7:1) */
+  --color-accent-strong: #e6003c;
+  --color-accent-hover: #cc0033;
+
+  --font-display: var(--font-oswald), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Плавный скролл только если пользователь не просил меньше движения */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html, body { background: var(--color-bg); color: var(--color-ink); }
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+}
+
+/* Видимый фокус — обязателен для клавиатурной навигации */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Табличные цифры для цен, чтобы не прыгала вёрстка */
+.tnum { font-variant-numeric: tabular-nums; }

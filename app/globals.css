@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+@theme {
+  /* Поверхности: графит, а не чистый чёрный — товар на нём читается теплее */
+  --color-ink: #0d0d10;
+  --color-surface: #16161a;
+  --color-surface-2: #1e1e24;
+  --color-line: #2e2e36;
+  --color-line-strong: #6a6a78; /* границы элементов управления, 3:1 */
+
+  --color-text: #ffffff;
+  --color-muted: #b4b4c0;
+
+  /* Сигнальный цвет — один на весь сайт. Текст на нём всегда чёрный */
+  --color-volt: #d8ff3c;
+  --color-volt-dim: #b9e02a;
+
+  --font-display: var(--font-oswald), "Arial Narrow", system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background: var(--color-ink);
+}
+
+/* Прозрачный body — сквозь него виден фиксированный фон сайта */
+body {
+  background: transparent;
+  color: var(--color-text);
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ---------- Типографика ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 9vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.display-md {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.label {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Растворение нижнего края фото в карточке */
+.photo-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(22, 22, 26, 0) 0%,
+    rgba(22, 22, 26, 0.35) 55%,
+    rgba(22, 22, 26, 0.9) 100%
+  );
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Просвечивающий текст ----------
+   Крупные заголовки не заливаются сплошным белым: буквы полупрозрачные,
+   сквозь них проступает фон. Тень по краю держит читаемость на светлых кадрах. */
+
+.display,
+.display-md {
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow:
+    0 2px 24px rgba(0, 0, 0, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Заголовок героя — сильнее всех: почти контур, фон виден насквозь */
+.display-see-through {
+  color: rgba(255, 255, 255, 0.9);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.7);
+  text-shadow: 0 3px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Обычный текст поверх видео — лёгкая тень, иначе на светлых кадрах плывёт */
+main p,
+main li,
+main dd,
+main dt,
+footer p,
+footer a {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-volt);
+  outline-offset: 2px;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Горизонтальная лента категорий на телефоне — без видимой полосы */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Движение ---------- */
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes veil-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(216, 255, 60, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(216, 255, 60, 0);
+  }
+}
+
+.rise-mask {
+  overflow: hidden;
+}
+.rise-mask > span {
+  display: block;
+  animation: rise 0.9s var(--ease-out-soft) both;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s var(--ease-out-soft),
+    transform 0.6s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.drawer-panel {
+  animation: drawer-in 0.4s var(--ease-out-soft) both;
+}
+.drawer-veil {
+  animation: veil-in 0.28s ease both;
+}
+
+.added-pulse {
+  animation: pulse-ring 0.7s ease-out;
+}
+
+/* Заливка кнопки, наезжающая слева */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-volt);
+  transform: translateX(-101%);
+  transition: transform 0.38s var(--ease-out-soft);
+}
+.btn-sweep:hover::after,
+.btn-sweep:focus-visible::after {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

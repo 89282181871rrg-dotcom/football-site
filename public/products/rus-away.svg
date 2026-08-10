@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" width="640" height="800" role="img" aria-label="RUS">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c1c21"/>
+      <stop offset="100%" stop-color="#101014"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="800" fill="url(#bg)"/>
+  <!-- силуэт джерси -->
+  <path d="M320 150 L200 190 L120 250 L165 330 L215 305 L215 660 Q320 685 425 660 L425 305 L475 330 L520 250 L440 190 L320 150 Z"
+        fill="#F2F2F2" stroke="#D8D8D8" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M262 158 Q320 205 378 158 L358 150 Q320 178 282 150 Z" fill="#D8D8D8" opacity="0.9"/>
+  <text x="320" y="470" text-anchor="middle" font-family="Arial Black, Arial, sans-serif"
+        font-size="96" font-weight="900" fill="#D8D8D8" opacity="0.95">RUS</text>
+</svg>
