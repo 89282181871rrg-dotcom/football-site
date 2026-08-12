@@ -1,20 +1,30 @@
-const WORDS = [
-  "NIKE",
-  "ADIDAS",
-  "PUMA",
-  "MIZUNO",
-  "NEW BALANCE",
-  "БУТСЫ",
-  "ШИПОВКИ",
-  "СОРОКОНОЖКИ",
-  "ПЕРЧАТКИ",
-  "МЯЧИ 1+1",
-  "ДОСТАВКА ПО РОССИИ",
-];
+"use client";
 
+import { useLocale } from "@/lib/locale-context";
+
+/**
+ * Бегущая строка. Слова берутся из словаря языка, поэтому меняются
+ * вместе с интерфейсом. Марки не переводятся — это имена собственные.
+ */
 export default function Marquee() {
+  const { t } = useLocale();
+
+  const words = [
+    "NIKE",
+    "ADIDAS",
+    "PUMA",
+    "MIZUNO",
+    "NEW BALANCE",
+    t("cat.fg"),
+    t("cat.ag"),
+    t("cat.tf"),
+    t("cat.gloves"),
+    `${t("cat.balls")} 1+1`,
+    t("hero.badge"),
+  ];
+
   // Лента дублируется — сдвиг на -50% выглядит бесшовным
-  const line = [...WORDS, ...WORDS];
+  const line = [...words, ...words];
 
   return (
     <div className="marquee overflow-hidden bg-volt py-3" aria-hidden="true">

@@ -1,7 +1,9 @@
 import { Inter, Oswald } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
+import { LocaleProvider } from "@/lib/locale-context";
 import VideoBackground from "@/components/VideoBackground";
+import SkipLink from "@/components/SkipLink";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -17,15 +19,23 @@ const oswald = Oswald({
   display: "swap",
 });
 
+/**
+ * Заголовок и описание для поиска и мессенджеров.
+ * Они одни на весь сайт и не переключаются вместе с языком: страница здесь
+ * одна, а Next умеет менять метаданные только по адресу. Поэтому написаны
+ * на двух языках сразу — так находят и по-русски, и по-английски.
+ */
 export const metadata = {
-  title: "Futbolki Russia — бутсы, шиповки, вратарские перчатки",
+  title: "Futbolki Russia — бутсы, шиповки, перчатки · Football boots shop",
   description:
-    "Футбольные бутсы, шиповки и сороконожки Nike, Adidas, Puma, Mizuno, New Balance. Вратарские перчатки из немецкого латекса, мячи. Размеры 36–45, отправка в день заказа, доставка по России.",
+    "Футбольные бутсы, шиповки и сороконожки Nike, Adidas, Puma, Mizuno, New Balance. Вратарские перчатки из немецкого латекса, мячи. Размеры 36–45, отправка в день заказа, доставка по всему миру. Football boots, turf shoes, goalkeeper gloves and balls — worldwide shipping.",
   openGraph: {
-    title: "Futbolki Russia — всё для футбола",
-    description: "Бутсы, шиповки, перчатки, мячи. Доставка по всей России.",
+    title: "Futbolki Russia — всё для футбола · Everything for football",
+    description:
+      "Бутсы, шиповки, перчатки, мячи. Доставка по всему миру. Boots, turf shoes, gloves and balls — worldwide shipping.",
     type: "website",
     locale: "ru_RU",
+    alternateLocale: ["en_US", "de_DE", "es_ES", "fr_FR", "it_IT", "pt_PT", "tr_TR", "ar_AE"],
   },
 };
 
@@ -39,14 +49,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ru" className={`${inter.variable} ${oswald.variable}`}>
       <body className="overflow-x-hidden">
-        <a
-          href="#main"
-          className="label sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-volt focus:px-4 focus:py-3 focus:text-ink"
-        >
-          Перейти к содержимому
-        </a>
         <VideoBackground />
-        <CartProvider>{children}</CartProvider>
+        <LocaleProvider>
+          <SkipLink />
+          <CartProvider>{children}</CartProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

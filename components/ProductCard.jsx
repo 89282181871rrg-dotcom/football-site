@@ -2,11 +2,12 @@
 
 import { useId, useState } from "react";
 import { useCart } from "@/lib/cart-context";
-import { formatPrice } from "@/lib/products";
+import { useLocale } from "@/lib/locale-context";
 import Lightbox from "./Lightbox";
 
 export default function ProductCard({ product }) {
   const { add, setOpen } = useCart();
+  const { t, p, money } = useLocale();
   const [size, setSize] = useState(product.sizes[0]);
   const [justAdded, setJustAdded] = useState(false);
   const [photo, setPhoto] = useState(0);
@@ -15,6 +16,11 @@ export default function ProductCard({ product }) {
 
   const images = product.images ?? [product.image];
   const hasSizes = !(product.sizes.length === 1 && product.sizes[0] === "ONE");
+
+  // Описания хранятся по-русски, здесь подставляется перевод (lib/locales)
+  const subtitle = p(product.subtitle);
+  const note = p(product.note);
+  const badge = p(product.badge);
 
   const handleAdd = () => {
     add({ ...product, image: images[0] }, size);
@@ -33,24 +39,23 @@ export default function ProductCard({ product }) {
           >
             <img
               src={images[photo]}
-              alt={`${product.title} — ${product.subtitle ?? "футбольная экипировка"}`}
+              alt={`${product.title} — ${subtitle ?? ""}`}
               width={800}
               height={1000}
               loading="lazy"
               className="h-full w-full object-cover opacity-[0.92] transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-hover:opacity-100"
             />
-            <span className="sr-only">Открыть фотографии на весь экран</span>
+            <span className="sr-only">{t("card.openPhotos")}</span>
           </button>
 
-          {/* Мягкий переход от фото к карточке — убирает резкую границу */}
           <div
             aria-hidden="true"
             className="photo-fade pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
           />
 
-          {product.badge && (
+          {badge && (
             <span className="label pointer-events-none absolute left-0 top-0 rounded-br-xl bg-volt px-2.5 py-1.5 font-bold text-ink">
-              {product.badge}
+              {badge}
             </span>
           )}
 
@@ -61,7 +66,6 @@ export default function ProductCard({ product }) {
           )}
         </div>
 
-        {/* Миниатюры — переключают фото прямо в карточке */}
         {images.length > 1 && (
           <div className="scrollbar-none flex gap-1 overflow-x-auto p-1">
             {images.map((src, i) => (
@@ -70,7 +74,7 @@ export default function ProductCard({ product }) {
                 type="button"
                 onClick={() => setPhoto(i)}
                 aria-current={i === photo}
-                aria-label={`Показать фото ${i + 1}`}
+                aria-label={`${i + 1}`}
                 className={`h-14 w-12 shrink-0 overflow-hidden rounded-lg border-2 transition-colors duration-200 ${
                   i === photo ? "border-volt" : "border-transparent opacity-55 hover:opacity-100"
                 }`}
@@ -84,25 +88,21 @@ export default function ProductCard({ product }) {
         <div className="flex flex-1 flex-col p-4">
           <h3 className="title text-lg">{product.title}</h3>
 
-          {product.subtitle && (
-            <p className="mt-1.5 text-sm leading-snug text-muted">
-              {product.subtitle}
-            </p>
+          {subtitle && (
+            <p className="mt-1.5 text-sm leading-snug text-muted">{subtitle}</p>
           )}
 
-          <p className="tnum display-md mt-3 text-volt">
-            {formatPrice(product.price)}
-          </p>
+          <p className="tnum display-md mt-3 text-volt">{money(product.price)}</p>
 
-          {product.note && (
+          {note && (
             <p className="mt-3 rounded-r-lg border-l-2 border-volt bg-ink/40 px-3 py-2 text-xs leading-relaxed text-muted">
-              {product.note}
+              {note}
             </p>
           )}
 
           {hasSizes && (
             <fieldset className="mt-4">
-              <legend className="label text-muted">Размер</legend>
+              <legend className="label text-muted">{t("card.size")}</legend>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {product.sizes.map((s) => (
                   <label
@@ -122,7 +122,6 @@ export default function ProductCard({ product }) {
                       className="sr-only"
                     />
                     {s}
-                    <span className="sr-only"> — размер для «{product.title}»</span>
                   </label>
                 ))}
               </div>
@@ -137,7 +136,7 @@ export default function ProductCard({ product }) {
                 justAdded ? "added-pulse bg-volt-dim" : "bg-volt hover:bg-volt-dim"
               }`}
             >
-              {justAdded ? "Добавлено" : "В корзину"}
+              {justAdded ? t("card.added") : t("card.add")}
             </button>
             <button
               type="button"
@@ -147,14 +146,12 @@ export default function ProductCard({ product }) {
               }}
               className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-300 hover:border-volt hover:text-ink"
             >
-              Купить
+              {t("card.buy")}
             </button>
           </div>
 
           <p aria-live="polite" className="sr-only">
-            {justAdded
-              ? `${product.title}${hasSizes ? `, размер ${size}` : ""} добавлен в корзину`
-              : ""}
+            {justAdded ? `${product.title} ${hasSizes ? size : ""}` : ""}
           </p>
         </div>
       </article>

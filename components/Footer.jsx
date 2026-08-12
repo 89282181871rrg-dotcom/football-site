@@ -1,6 +1,12 @@
+"use client";
+
 import { CONTACTS } from "@/lib/contacts";
+import { useLocale } from "@/lib/locale-context";
+import { RATES_UPDATED } from "@/lib/currency";
 
 export default function Footer() {
+  const { t } = useLocale();
+
   return (
     <footer id="contacts" className="border-t border-white/10 bg-surface/70 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
@@ -12,25 +18,22 @@ export default function Footer() {
                 alt=""
                 width={34}
                 height={34}
-                className="h-8 w-8 bg-white object-contain p-0.5"
+                className="h-8 w-8 rounded-lg bg-white object-contain p-0.5"
               />
               <span className="title text-lg">Futbolki Russia</span>
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
-              Всё для футбола: бутсы, шиповки, сороконожки, вратарские перчатки
-              и мячи. Nike, Adidas, Puma, Mizuno, New Balance.
-            </p>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{t("foot.about")}</p>
           </div>
 
           <div>
-            <h2 className="label text-muted">Связаться</h2>
+            <h2 className="label text-muted">{t("foot.contact")}</h2>
             <a
               href={CONTACTS.phoneHref}
               className="tnum display-md mt-3 block transition-colors duration-200 hover:text-volt"
             >
               {CONTACTS.phoneDisplay}
             </a>
-            <p className="mt-2 text-sm text-muted">{CONTACTS.hours}</p>
+            <p className="mt-2 text-sm text-muted">{t("foot.hours")}</p>
 
             <ul className="mt-5 flex flex-wrap gap-2">
               {[
@@ -42,7 +45,7 @@ export default function Footer() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="label flex min-h-11 items-center border border-line-strong px-4 font-bold transition-colors duration-200 hover:border-volt hover:text-volt"
+                    className="label flex min-h-11 items-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-200 hover:border-volt hover:text-volt"
                   >
                     {label}
                   </a>
@@ -59,12 +62,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h2 className="label text-muted">Разделы</h2>
+            <h2 className="label text-muted">{t("foot.sections")}</h2>
             <ul className="mt-3">
               {[
-                ["#catalog", "Каталог"],
-                ["#sizes", "Таблица размеров"],
-                ["#faq", "Доставка и обмен"],
+                ["#catalog", t("nav.catalog")],
+                ["#sizes", t("foot.sizes")],
+                ["#faq", t("foot.delivery")],
               ].map(([href, label]) => (
                 <li key={href}>
                   <a
@@ -80,7 +83,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-14 border-t border-line pt-6 text-xs text-muted">
-          © {new Date().getFullYear()} Futbolki Russia
+          © {new Date().getFullYear()} Futbolki Russia · {t("sw.rates")}: {RATES_UPDATED}
         </p>
       </div>
     </footer>

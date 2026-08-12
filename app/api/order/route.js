@@ -1,87 +1,129 @@
-// Приём заказа с сайта.
-//
-// Заказ уходит на почту через Web3Forms — бесплатный сервис, которому нужен
-// только публичный access key (не пароль от почты, пароль нигде не нужен).
-// Получить ключ: https://web3forms.com — вводите почту, ключ приходит письмом.
-//
-// Пока ключ не прописан, сайт работает: заказ пишется в логи сервера,
-// и клиент всё равно видит телефон для звонка.
+/**
+ * Приём заказа. Отправляет его сразу в несколько мест — какие настроены,
+ * те и сработают. Ни один канал не обязателен: если не настроен ни один,
+ * заказ всё равно пишется в лог сервера и покупатель видит подтверждение.
+ *
+ * Настройка — в файле .env.local в корне проекта. Инструкция: ЗАЯВКИ.md
+ *
+ *   GOOGLE_SHEET_URL   — заказ падает строкой в Google Таблицу
+ *   NTFY_TOPIC         — мгновенный пуш на телефон
+ *   WEB3FORMS_KEY      — письмо на почту
+ */
 
 const OWNER_EMAIL = "89282181871rrg@gmail.com";
 
+function buildText(o) {
+  const lines = o.items.map(
+    (i) => `• ${i.title} — ${i.size === "ONE" ? "—" : i.size} × ${i.qty} = ${i.qty * i.price} ₽`
+  );
+  return [
+    "НОВЫЙ ЗАКАЗ",
+    "",
+    `Имя: ${o.name}`,
+    `Телефон: ${o.phone}`,
+    o.country ? `Страна: ${o.country}` : null,
+    `Адрес: ${o.city}`,
+    o.comment ? `Комментарий: ${o.comment}` : null,
+    "",
+    ...lines,
+    "",
+    `ИТОГО: ${o.total} ₽` + (o.currency !== "RUB" ? `  (показано как ${o.totalShown})` : ""),
+    `Язык сайта: ${o.lang}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+async function toSheet(o, text) {
+  const url = process.env.GOOGLE_SHEET_URL;
+  if (!url) return "не настроен";
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      date: new Date().toISOString(),
+      name: o.name,
+      phone: o.phone,
+      country: o.country,
+      city: o.city,
+      comment: o.comment,
+      items: o.items.map((i) => `${i.title} ${i.size} ×${i.qty}`).join("; "),
+      totalRub: o.total,
+      shown: o.totalShown,
+      currency: o.currency,
+      lang: o.lang,
+    }),
+  });
+  return res.ok ? "ок" : `ошибка ${res.status}`;
+}
+
+async function toPush(o, text) {
+  const topic = process.env.NTFY_TOPIC;
+  if (!topic) return "не настроен";
+  const res = await fetch(`https://ntfy.sh/${topic}`, {
+    method: "POST",
+    headers: {
+      Title: `Заказ ${o.total} P от ${o.name}`,
+      Priority: "high",
+      Tags: "shopping_cart",
+    },
+    body: text,
+  });
+  return res.ok ? "ок" : `ошибка ${res.status}`;
+}
+
+async function toEmail(o, text) {
+  const key = process.env.WEB3FORMS_KEY || process.env.WEB3FORMS_ACCESS_KEY;
+  if (!key) return "не настроен";
+  const res = await fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      access_key: key,
+      subject: `Заказ с сайта — ${o.name}, ${o.total} ₽`,
+      from_name: "Futbolki Russia",
+      to: OWNER_EMAIL,
+      message: text,
+    }),
+  });
+  return res.ok ? "ок" : `ошибка ${res.status}`;
+}
+
 export async function POST(request) {
-  let payload;
+  let o;
   try {
-    payload = await request.json();
+    o = await request.json();
   } catch {
     return Response.json({ error: "Некорректный запрос" }, { status: 400 });
   }
 
-  const { name, phone, comment, items, total } = payload ?? {};
+  const valid =
+    typeof o?.name === "string" && o.name.trim().length >= 2 &&
+    typeof o?.phone === "string" && o.phone.replace(/\D/g, "").length >= 10 &&
+    typeof o?.city === "string" && o.city.trim().length >= 3 &&
+    Array.isArray(o?.items) && o.items.length > 0;
 
-  // Проверяем на сервере, а не только в браузере
-  if (
-    typeof name !== "string" ||
-    name.trim().length < 2 ||
-    typeof phone !== "string" ||
-    phone.replace(/\D/g, "").length < 10 ||
-    !Array.isArray(items) ||
-    items.length === 0
-  ) {
-    return Response.json(
-      { error: "Проверьте имя, телефон и состав заказа" },
-      { status: 400 }
-    );
+  if (!valid) {
+    return Response.json({ error: "Проверьте имя, телефон, адрес и состав заказа" }, { status: 400 });
   }
 
-  const lines = items.map(
-    (i) => `• ${i.title} — размер ${i.size} × ${i.qty} = ${i.qty * i.price} ₽`
-  );
+  const text = buildText(o);
 
-  const text = [
-    "НОВЫЙ ЗАКАЗ С САЙТА",
-    "",
-    `Имя: ${name.trim()}`,
-    `Телефон: ${phone.trim()}`,
-    comment ? `Комментарий: ${comment.trim()}` : null,
-    "",
-    "Состав заказа:",
-    ...lines,
-    "",
-    `ИТОГО: ${total} ₽`,
-  ]
-    .filter(Boolean)
-    .join("\n");
+  // Каналы независимы: падение одного не мешает остальным
+  const results = await Promise.allSettled([toSheet(o, text), toPush(o, text), toEmail(o, text)]);
+  const status = {
+    таблица: results[0].status === "fulfilled" ? results[0].value : "сбой",
+    пуш: results[1].status === "fulfilled" ? results[1].value : "сбой",
+    почта: results[2].status === "fulfilled" ? results[2].value : "сбой",
+  };
 
-  const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
-
-  // Без ключа заказ не теряем — пишем в лог, чтобы можно было поднять руками
-  if (!accessKey) {
-    console.warn("[order] Почта не настроена, заказ только в логах:\n" + text);
-    return Response.json({ ok: true, delivered: false });
+  const delivered = Object.values(status).some((v) => v === "ок");
+  if (!delivered) {
+    console.warn("[заказ] Ни один канал не сработал. Заказ:\n" + text + "\n", status);
+  } else {
+    console.log("[заказ] Доставлен:", status);
   }
 
-  try {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: accessKey,
-        subject: `Заказ с сайта — ${name.trim()}, ${total} ₽`,
-        from_name: "Futbolki Russia — заказ с сайта",
-        to: OWNER_EMAIL,
-        message: text,
-      }),
-    });
-
-    if (!res.ok) {
-      console.error("[order] Сервис почты вернул ошибку", await res.text());
-      return Response.json({ error: "Не удалось отправить заказ" }, { status: 502 });
-    }
-
-    return Response.json({ ok: true, delivered: true });
-  } catch (err) {
-    console.error("[order] Сбой при отправке заказа", err);
-    return Response.json({ error: "Не удалось отправить заказ" }, { status: 502 });
-  }
+  // Покупателю всегда отвечаем успехом: заказ у нас есть хотя бы в логе
+  return Response.json({ ok: true, delivered, status });
 }

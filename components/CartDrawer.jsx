@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
-import { formatPrice } from "@/lib/products";
+import { useLocale } from "@/lib/locale-context";
 import { CONTACTS } from "@/lib/contacts";
 
 export default function CartDrawer() {
   const { items, setQty, remove, clear, total, isOpen, setOpen } = useCart();
+  const { t, lang, currency, money, country } = useLocale();
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [errors, setErrors] = useState({});
   const panelRef = useRef(null);
@@ -31,16 +32,17 @@ export default function CartDrawer() {
     const form = new FormData(e.currentTarget);
     const name = String(form.get("name") || "").trim();
     const phone = String(form.get("phone") || "").trim();
+    const country = String(form.get("country") || "").trim();
+    const city = String(form.get("city") || "").trim();
     const comment = String(form.get("comment") || "").trim();
 
-    const nextErrors = {};
-    if (name.length < 2) nextErrors.name = "Укажите имя — минимум 2 символа";
-    if (phone.replace(/\D/g, "").length < 10)
-      nextErrors.phone = "Телефон должен содержать минимум 10 цифр";
-    setErrors(nextErrors);
-
-    if (Object.keys(nextErrors).length > 0) {
-      if (nextErrors.name) nameRef.current?.focus();
+    const next = {};
+    if (name.length < 2) next.name = t("cart.err.name");
+    if (phone.replace(/\D/g, "").length < 10) next.phone = t("cart.err.phone");
+    if (city.length < 3) next.city = t("cart.err.city");
+    setErrors(next);
+    if (Object.keys(next).length) {
+      if (next.name) nameRef.current?.focus();
       return;
     }
 
@@ -49,7 +51,11 @@ export default function CartDrawer() {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, comment, items, total }),
+        body: JSON.stringify({
+          name, phone, country, city, comment,
+          items, total, lang, currency,
+          totalShown: money(total),
+        }),
       });
       if (!res.ok) throw new Error("bad response");
       setStatus("done");
@@ -60,7 +66,7 @@ export default function CartDrawer() {
   };
 
   const field =
-    "h-12 w-full border border-line-strong bg-ink px-4 text-base text-text focus:border-volt";
+    "h-12 w-full rounded-xl border border-line-strong bg-ink px-4 text-base text-text focus:border-volt";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -74,49 +80,44 @@ export default function CartDrawer() {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Корзина"
+        aria-label={t("cart.title")}
         tabIndex={-1}
         className="drawer-panel absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ink"
       >
         <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="label font-bold">Корзина</h2>
+          <h2 className="label font-bold">{t("cart.title")}</h2>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="label flex min-h-11 min-w-11 items-center justify-center font-bold"
+            className="label flex min-h-11 items-center justify-center rounded-xl px-3 font-bold"
           >
-            <span aria-hidden="true">Закрыть</span>
-            <span className="sr-only">Закрыть корзину</span>
+            {t("cart.close")}
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {status === "done" ? (
             <div className="py-10">
-              <p className="display-md">Заказ принят</p>
-              <p className="label mt-5 text-muted">
-                Перезвоним в течение 15 минут в рабочее время, чтобы подтвердить
-                размер и доставку.
-              </p>
+              <p className="display-md">{t("cart.done")}</p>
+              <p className="mt-5 text-sm leading-relaxed text-muted">{t("cart.doneText")}</p>
+              <p className="mt-6 text-sm text-muted">{t("cart.urgent")}</p>
               <a
                 href={CONTACTS.phoneHref}
-                className="label tnum mt-8 flex min-h-12 items-center justify-center bg-volt px-5 font-bold text-ink"
+                className="label tnum mt-2 flex min-h-12 items-center justify-center rounded-xl bg-volt px-5 font-bold text-ink"
               >
                 {CONTACTS.phoneDisplay}
               </a>
             </div>
           ) : items.length === 0 ? (
             <div className="py-16">
-              <p className="display-md">Пусто</p>
-              <p className="label mt-4 text-muted">
-                Выберите модель в каталоге — оформим за минуту.
-              </p>
+              <p className="display-md">{t("cart.empty")}</p>
+              <p className="mt-4 text-sm text-muted">{t("cart.emptyText")}</p>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="label mt-8 flex min-h-12 w-full items-center justify-center bg-volt px-6 font-bold text-ink"
+                className="label mt-8 flex min-h-12 w-full items-center justify-center rounded-xl bg-volt px-6 font-bold text-ink"
               >
-                В каталог
+                {t("cart.toCatalog")}
               </button>
             </div>
           ) : (
@@ -128,43 +129,41 @@ export default function CartDrawer() {
                     alt=""
                     width={64}
                     height={80}
-                    className="h-20 w-16 object-cover"
+                    className="h-20 w-16 rounded-lg object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="title truncate text-base">{i.title}</p>
                     <p className="label mt-1 text-muted">
-                      {i.size === "ONE" ? "Один вариант" : `Размер ${i.size}`}
+                      {i.size === "ONE" ? t("card.oneOption") : `${t("cart.sizeLabel")} ${i.size}`}
                     </p>
-                    <p className="tnum label mt-1 font-bold">
-                      {formatPrice(i.price * i.qty)}
-                    </p>
+                    <p className="tnum label mt-1 font-bold">{money(i.price * i.qty)}</p>
 
-                    <div className="mt-3 flex items-center gap-px">
+                    <div className="mt-3 flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => setQty(i.key, i.qty - 1)}
-                        className="flex h-11 w-11 items-center justify-center bg-surface-2 text-lg hover:bg-volt hover:text-ink"
+                        aria-label="−"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-2 text-lg hover:bg-volt hover:text-ink"
                       >
-                        <span aria-hidden="true">−</span>
-                        <span className="sr-only">Уменьшить количество</span>
+                        −
                       </button>
-                      <span className="tnum flex h-11 w-11 items-center justify-center bg-surface-2 text-sm">
+                      <span className="tnum flex h-11 w-11 items-center justify-center rounded-lg bg-surface-2 text-sm">
                         {i.qty}
                       </span>
                       <button
                         type="button"
                         onClick={() => setQty(i.key, i.qty + 1)}
-                        className="flex h-11 w-11 items-center justify-center bg-surface-2 text-lg hover:bg-volt hover:text-ink"
+                        aria-label="+"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-2 text-lg hover:bg-volt hover:text-ink"
                       >
-                        <span aria-hidden="true">+</span>
-                        <span className="sr-only">Увеличить количество</span>
+                        +
                       </button>
                       <button
                         type="button"
                         onClick={() => remove(i.key)}
                         className="label ml-auto flex min-h-11 items-center px-2 text-muted underline underline-offset-4 hover:text-text"
                       >
-                        Убрать
+                        {t("cart.remove")}
                       </button>
                     </div>
                   </div>
@@ -175,16 +174,16 @@ export default function CartDrawer() {
         </div>
 
         {items.length > 0 && status !== "done" && (
-          <form onSubmit={submit} noValidate className="px-5 pb-5 pt-4">
+          <form onSubmit={submit} noValidate className="max-h-[62vh] overflow-y-auto px-5 pb-5 pt-4">
             <div className="mb-5 flex items-baseline justify-between">
-              <span className="label text-muted">Итого</span>
-              <span className="tnum display-md text-volt">{total}&nbsp;₽</span>
+              <span className="label text-muted">{t("cart.total")}</span>
+              <span className="tnum display-md text-volt">{money(total)}</span>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label htmlFor="name" className="label mb-1 block text-muted">
-                  Имя*
+                  {t("cart.name")}*
                 </label>
                 <input
                   ref={nameRef}
@@ -197,11 +196,7 @@ export default function CartDrawer() {
                   className={field}
                 />
                 {errors.name && (
-                  <p
-                    id="name-error"
-                    role="alert"
-                    className="label mt-2 border-l-2 border-volt pl-2 font-bold"
-                  >
+                  <p id="name-error" role="alert" className="label mt-2 font-bold text-volt">
                     {errors.name}
                   </p>
                 )}
@@ -209,7 +204,7 @@ export default function CartDrawer() {
 
               <div>
                 <label htmlFor="phone" className="label mb-1 block text-muted">
-                  Телефон*
+                  {t("cart.phone")}*
                 </label>
                 <input
                   id="phone"
@@ -223,41 +218,73 @@ export default function CartDrawer() {
                   className={field}
                 />
                 {errors.phone ? (
-                  <p
-                    id="phone-error"
-                    role="alert"
-                    className="label mt-2 border-l-2 border-volt pl-2 font-bold"
-                  >
+                  <p id="phone-error" role="alert" className="label mt-2 font-bold text-volt">
                     {errors.phone}
                   </p>
                 ) : (
                   <p id="phone-hint" className="label mt-2 text-muted">
-                    Позвоним только чтобы подтвердить заказ
+                    {t("cart.phoneHint")}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="country" className="label mb-1 block text-muted">
+                  {t("cart.country")}
+                </label>
+                <input
+                  id="country"
+                  name="country"
+                  type="text"
+                  autoComplete="country-name"
+                  key={country}
+                  defaultValue={country}
+                  className={field}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="city" className="label mb-1 block text-muted">
+                  {t("cart.city")}*
+                </label>
+                <input
+                  id="city"
+                  name="city"
+                  type="text"
+                  autoComplete="street-address"
+                  aria-invalid={errors.city ? "true" : undefined}
+                  aria-describedby={errors.city ? "city-error" : undefined}
+                  className={field}
+                />
+                {errors.city && (
+                  <p id="city-error" role="alert" className="label mt-2 font-bold text-volt">
+                    {errors.city}
                   </p>
                 )}
               </div>
 
               <div>
                 <label htmlFor="comment" className="label mb-1 block text-muted">
-                  Комментарий
+                  {t("cart.comment")}
                 </label>
                 <textarea
                   id="comment"
                   name="comment"
                   rows={2}
-                  className="w-full border border-line-strong bg-ink px-4 py-3 text-base text-text focus:border-volt"
+                  className="w-full rounded-xl border border-line-strong bg-ink px-4 py-3 text-base text-text focus:border-volt"
                 />
               </div>
             </div>
 
+            <p className="label mt-4 rounded-r-lg border-l-2 border-volt bg-surface/60 px-3 py-2 text-muted">
+              {t("cart.intl")}
+            </p>
+
             {status === "error" && (
-              <div
-                role="alert"
-                className="mt-4 border-l-2 border-volt pl-3"
-              >
-                <p className="label font-bold">Заказ не отправился</p>
+              <div role="alert" className="mt-4 rounded-r-lg border-l-2 border-volt pl-3">
+                <p className="label font-bold">{t("cart.err.send")}</p>
                 <p className="label mt-1 text-muted">
-                  Проверьте связь и попробуйте ещё раз или позвоните —{" "}
+                  {t("cart.err.retry")}{" "}
                   <a
                     href={CONTACTS.phoneHref}
                     className="tnum text-text underline underline-offset-4"
@@ -271,14 +298,12 @@ export default function CartDrawer() {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="label mt-6 flex min-h-12 w-full items-center justify-center bg-volt font-bold text-ink transition-opacity duration-200 disabled:opacity-50"
+              className="label mt-6 flex min-h-12 w-full items-center justify-center rounded-xl bg-volt font-bold text-ink transition-opacity duration-200 disabled:opacity-50"
             >
-              {status === "sending" ? "Отправляем" : "Оформить заказ"}
+              {status === "sending" ? t("cart.sending") : t("cart.submit")}
             </button>
 
-            <p className="label mt-4 text-muted">
-              Нажимая кнопку, вы соглашаетесь на обработку персональных данных
-            </p>
+            <p className="label mt-4 text-muted">{t("cart.consent")}</p>
           </form>
         )}
       </div>

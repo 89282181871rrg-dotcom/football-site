@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useLocale } from "@/lib/locale-context";
 
 /**
  * Полноэкранный просмотр фото.
  * Стрелки и свайп переключают кадры, Esc закрывает, фокус запирается внутри.
  */
 export default function Lightbox({ images, index, title, onClose, onIndex }) {
+  const { t } = useLocale();
   const panelRef = useRef(null);
   const touchX = useRef(null);
 
@@ -47,7 +49,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
       ref={panelRef}
       role="dialog"
       aria-modal="true"
-      aria-label={`Фотографии: ${title}`}
+      aria-label={`${t("lb.gallery")}: ${title}`}
       tabIndex={-1}
       className="drawer-veil fixed inset-0 z-[60] flex flex-col bg-black/95"
       onTouchStart={onTouchStart}
@@ -64,7 +66,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
           className="label flex min-h-11 min-w-11 items-center justify-center border border-line-strong px-3 font-bold transition-colors duration-200 hover:border-volt hover:text-volt"
         >
           <span aria-hidden="true">✕</span>
-          <span className="sr-only">Закрыть просмотр</span>
+          <span className="sr-only">{t("lb.close")}</span>
         </button>
       </div>
 
@@ -75,7 +77,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
         <img
           key={images[index]}
           src={images[index]}
-          alt={`${title} — фото ${index + 1}`}
+          alt={`${title} — ${t("lb.photo", { n: index + 1 })}`}
           className="max-h-full max-w-full object-contain"
           style={{ animation: "fade-up .3s var(--ease-out-soft) both" }}
         />
@@ -88,7 +90,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
               className="absolute left-2 flex h-14 w-14 items-center justify-center bg-ink/80 text-2xl transition-colors duration-200 hover:bg-volt hover:text-ink"
             >
               <span aria-hidden="true">‹</span>
-              <span className="sr-only">Предыдущее фото</span>
+              <span className="sr-only">{t("lb.prev")}</span>
             </button>
             <button
               type="button"
@@ -96,7 +98,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
               className="absolute right-2 flex h-14 w-14 items-center justify-center bg-ink/80 text-2xl transition-colors duration-200 hover:bg-volt hover:text-ink"
             >
               <span aria-hidden="true">›</span>
-              <span className="sr-only">Следующее фото</span>
+              <span className="sr-only">{t("lb.next")}</span>
             </button>
           </>
         )}
@@ -120,7 +122,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
                 className="h-full w-full object-cover"
                 loading="lazy"
               />
-              <span className="sr-only">Фото {i + 1}</span>
+              <span className="sr-only">{t("lb.photo", { n: i + 1 })}</span>
             </button>
           ))}
         </div>
