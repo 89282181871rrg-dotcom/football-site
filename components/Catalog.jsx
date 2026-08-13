@@ -15,7 +15,7 @@ export default function Catalog() {
     id === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === id).length;
 
   return (
-    <section id="catalog" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
+    <section id="catalog" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:py-28">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
         <h2 className="display-md">
           {t("catalog.title")} <span className="tnum text-volt">{PRODUCTS.length}</span>
@@ -50,7 +50,7 @@ export default function Catalog() {
       {list.length === 0 ? (
         <p className="mt-16 text-muted">{t("catalog.empty")}</p>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

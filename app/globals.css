@@ -42,8 +42,8 @@ body {
 .display {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.75rem, 9vw, 6.5rem);
-  line-height: 0.92;
+  font-size: clamp(2.25rem, 8.4vw, 6.5rem);
+  line-height: 0.94;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
@@ -51,8 +51,8 @@ body {
 .display-md {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.75rem, 4.5vw, 3rem);
-  line-height: 1;
+  font-size: clamp(1.5rem, 4.2vw, 3rem);
+  line-height: 1.02;
   letter-spacing: -0.01em;
   text-transform: uppercase;
 }
@@ -268,5 +268,45 @@ summary::-webkit-details-marker {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+
+/* ---------- Телефон ---------- */
+
+/*
+ * Увеличение видеофона своё для каждого размера экрана.
+ * На телефоне экран вертикальный, а ролик горизонтальный: object-fit: cover
+ * и так показывает лишь узкую полосу по центру кадра. Увеличивать сверху
+ * нечего — там будет уже не видео, а пятно. Значения задаются в
+ * components/VideoBackground.jsx, здесь только выбор по ширине экрана.
+ */
+.bg-video {
+  transform: scale(var(--zoom-phone, 1));
+}
+@media (min-width: 640px) {
+  .bg-video { transform: scale(var(--zoom-tablet, 1.12)); }
+}
+@media (min-width: 1024px) {
+  .bg-video { transform: scale(var(--zoom-desktop, 1.25)); }
+}
+
+/*
+ * Размытие подложек поверх играющего видео — самая тяжёлая вещь на странице.
+ * На телефоне выключаем: панели и без него непрозрачны на 78%, читаемость
+ * не страдает, зато прокрутка перестаёт дёргаться на недорогих аппаратах.
+ */
+@media (max-width: 639px) {
+  .backdrop-blur-md,
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Длинные слова в описаниях не должны распирать узкую карточку */
+@media (max-width: 639px) {
+  h1, h2, h3, p, dd, dt, summary {
+    overflow-wrap: break-word;
   }
 }

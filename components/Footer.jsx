@@ -9,8 +9,8 @@ export default function Footer() {
 
   return (
     <footer id="contacts" className="border-t border-white/10 bg-surface/70 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3">
           <div>
             <div className="flex items-center gap-2.5">
               <img
@@ -82,7 +82,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-14 border-t border-line pt-6 text-xs text-muted">
+        <p className="mt-10 border-t border-line pt-6 text-xs text-muted sm:mt-14">
           © {new Date().getFullYear()} Futbolki Russia · {t("sw.rates")}: {RATES_UPDATED}
         </p>
       </div>

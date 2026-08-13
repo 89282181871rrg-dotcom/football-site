@@ -67,7 +67,7 @@ export default function ProductCard({ product }) {
         </div>
 
         {images.length > 1 && (
-          <div className="scrollbar-none flex gap-1 overflow-x-auto p-1">
+          <div className="scrollbar-none hidden gap-1 overflow-x-auto p-1 sm:flex">
             {images.map((src, i) => (
               <button
                 key={src}
@@ -85,25 +85,25 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        <div className="flex flex-1 flex-col p-4">
-          <h3 className="title text-lg">{product.title}</h3>
+        <div className="flex flex-1 flex-col p-3 sm:p-4">
+          <h3 className="title text-base sm:text-lg">{product.title}</h3>
 
           {subtitle && (
-            <p className="mt-1.5 text-sm leading-snug text-muted">{subtitle}</p>
+            <p className="mt-1 text-[0.8rem] leading-snug text-muted sm:mt-1.5 sm:text-sm">{subtitle}</p>
           )}
 
-          <p className="tnum display-md mt-3 text-volt">{money(product.price)}</p>
+          <p className="tnum display-md mt-2 text-volt sm:mt-3">{money(product.price)}</p>
 
           {note && (
-            <p className="mt-3 rounded-r-lg border-l-2 border-volt bg-ink/40 px-3 py-2 text-xs leading-relaxed text-muted">
+            <p className="mt-2 rounded-r-lg border-l-2 border-volt bg-ink/40 px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-muted sm:mt-3 sm:px-3 sm:py-2 sm:text-xs">
               {note}
             </p>
           )}
 
           {hasSizes && (
-            <fieldset className="mt-4">
+            <fieldset className="mt-3 sm:mt-4">
               <legend className="label text-muted">{t("card.size")}</legend>
-              <div className="mt-2 flex flex-wrap gap-1.5">
+              <div className="mt-2 flex flex-wrap gap-1 sm:gap-1.5">
                 {product.sizes.map((s) => (
                   <label
                     key={s}
@@ -128,7 +128,7 @@ export default function ProductCard({ product }) {
             </fieldset>
           )}
 
-          <div className="mt-auto flex gap-1.5 pt-5">
+          <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:gap-1.5 sm:pt-5">
             <button
               type="button"
               onClick={handleAdd}

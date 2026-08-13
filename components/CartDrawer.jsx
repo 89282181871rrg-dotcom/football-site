@@ -66,7 +66,7 @@ export default function CartDrawer() {
   };
 
   const field =
-    "h-12 w-full rounded-xl border border-line-strong bg-ink px-4 text-base text-text focus:border-volt";
+    "h-11 w-full rounded-xl border border-line-strong bg-ink px-3.5 text-base text-text focus:border-volt sm:h-12 sm:px-4";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -84,7 +84,7 @@ export default function CartDrawer() {
         tabIndex={-1}
         className="drawer-panel absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-ink"
       >
-        <div className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center justify-between px-4 py-4 sm:px-5">
           <h2 className="label font-bold">{t("cart.title")}</h2>
           <button
             type="button"
@@ -95,7 +95,7 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
           {status === "done" ? (
             <div className="py-10">
               <p className="display-md">{t("cart.done")}</p>
@@ -174,13 +174,13 @@ export default function CartDrawer() {
         </div>
 
         {items.length > 0 && status !== "done" && (
-          <form onSubmit={submit} noValidate className="max-h-[62vh] overflow-y-auto px-5 pb-5 pt-4">
+          <form onSubmit={submit} noValidate className="max-h-[72vh] overflow-y-auto px-4 pb-5 pt-4 sm:max-h-[62vh] sm:px-5">
             <div className="mb-5 flex items-baseline justify-between">
               <span className="label text-muted">{t("cart.total")}</span>
               <span className="tnum display-md text-volt">{money(total)}</span>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
                 <label htmlFor="name" className="label mb-1 block text-muted">
                   {t("cart.name")}*

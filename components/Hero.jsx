@@ -18,8 +18,8 @@ export default function Hero() {
         className="hero-scrim pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/92 from-0% via-ink/55 via-35% to-transparent to-65%"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-24 sm:pt-12">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+      <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-4 sm:px-6 sm:pb-24 sm:pt-12">
+        <div className="grid items-center gap-7 sm:gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <p
               className="label inline-flex items-center gap-2 rounded-lg bg-volt px-3 py-1.5 text-ink"
@@ -28,7 +28,7 @@ export default function Hero() {
               {t("hero.badge")}
             </p>
 
-            <h1 className="display display-see-through mt-6">
+            <h1 className="display display-see-through mt-4 sm:mt-6">
               <span className="rise-mask block">
                 <span style={{ animationDelay: "80ms" }}>{t("hero.title1")}</span>
               </span>
@@ -43,14 +43,14 @@ export default function Hero() {
             </h1>
 
             <p
-              className="mt-6 max-w-md text-base leading-relaxed text-text/90"
+              className="mt-4 max-w-md text-[0.95rem] leading-relaxed text-text/90 sm:mt-6 sm:text-base"
               style={{ animation: "fade-up .7s var(--ease-out-soft) .45s both" }}
             >
               {t("hero.lead")}
             </p>
 
             <div
-              className="mt-8 flex flex-col gap-3 sm:flex-row"
+              className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:gap-3"
               style={{ animation: "fade-up .7s var(--ease-out-soft) .55s both" }}
             >
               <a
@@ -67,7 +67,7 @@ export default function Hero() {
               </a>
             </div>
 
-            <dl className="mt-12 grid max-w-md grid-cols-3 gap-4 border-t border-line pt-8">
+            <dl className="mt-8 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-6 sm:mt-12 sm:gap-4 sm:pt-8">
               {[
                 [String(PRODUCTS.length), t("hero.stat.models")],
                 ["36–45", t("hero.stat.sizes")],
@@ -85,7 +85,7 @@ export default function Hero() {
             className="relative"
             style={{ animation: "fade-up .9s var(--ease-out-soft) .3s both" }}
           >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 bg-surface/72 backdrop-blur-sm">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-white/10 bg-surface/72 backdrop-blur-sm sm:aspect-[4/5]">
               <img
                 src={featured.images?.[0] ?? featured.image}
                 alt={featured.title}

@@ -17,13 +17,13 @@ export default function SizeGuide() {
   const heads = [t("size.eu"), t("size.ru"), t("size.len"), t("size.uk")];
 
   return (
-    <section id="sizes" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
+    <section id="sizes" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:py-28">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
         <h2 className="display-md">{t("size.title")}</h2>
         <p className="max-w-sm text-sm text-muted">{t("size.lead")}</p>
       </div>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+      <div className="mt-8 grid gap-8 sm:mt-10 sm:gap-10 lg:grid-cols-[1.3fr_1fr]">
         <div className="overflow-x-auto rounded-2xl">
           <table className="w-full min-w-[480px] border-collapse text-left">
             <caption className="sr-only">{t("size.title")}</caption>
@@ -53,7 +53,7 @@ export default function SizeGuide() {
           </table>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}

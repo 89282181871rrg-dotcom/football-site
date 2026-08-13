@@ -16,12 +16,17 @@ const POSTER = "";
 const OVERLAY = 0.2;
 
 /**
- * Увеличение кадра. 1 — как есть.
- * Поднимай, если в ролике есть чёрные поля по краям: при 1.2 обрезается
- * по 10% с каждой стороны, и поля уходят за экран.
+ * Увеличение кадра. 1 — как есть. Поднимай, если в ролике есть чёрные поля
+ * по краям: при 1.2 обрезается по 10% с каждой стороны, и поля уходят за экран.
  * Обратная сторона — остальные сцены тоже обрежутся сильнее.
+ *
+ * Значений три, потому что экраны разные. Телефон вертикальный, а ролик
+ * горизонтальный: браузер и так показывает лишь узкую полосу по центру кадра,
+ * и любое увеличение сверху превращает фон в пятно. Поэтому на телефоне 1.
  */
-const ZOOM = 1.25;
+const ZOOM = 1.25;        // компьютер, от 1024 px
+const ZOOM_TABLET = 1.1;  // планшет, от 640 px
+const ZOOM_PHONE = 1;     // телефон
 
 export default function VideoBackground() {
   const videoRef = useRef(null);
@@ -67,13 +72,16 @@ export default function VideoBackground() {
         onError={() =>
           console.error("[фон] Видео не загрузилось:", SRC)
         }
-        className="absolute inset-0 h-full w-full"
+        className="bg-video absolute inset-0 h-full w-full"
         style={{
           objectFit: "cover",
           objectPosition: "center center",
-          transform: `scale(${ZOOM})`,
           transformOrigin: "center center",
           pointerEvents: "none",
+          // Сам масштаб выбирается по ширине экрана — правило .bg-video в globals.css
+          "--zoom-phone": ZOOM_PHONE,
+          "--zoom-tablet": ZOOM_TABLET,
+          "--zoom-desktop": ZOOM,
         }}
       >
         {SRC_WEBM && <source src={SRC_WEBM} type="video/webm" />}
