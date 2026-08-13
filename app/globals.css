@@ -299,8 +299,14 @@ summary::-webkit-details-marker {
 @media (max-width: 639px) {
   .backdrop-blur-md,
   .backdrop-blur-sm {
-    backdrop-filter: none;
+    /*
+     * Гасим саму переменную Tailwind, а не свойство. Свойство сборщик
+     * схлопывает с версией для старых браузеров и выкидывает нужную строку —
+     * проверено на боевой сборке, размытие оставалось включённым.
+     */
+    --tw-backdrop-blur: initial;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
