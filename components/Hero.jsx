@@ -2,13 +2,13 @@
 
 import { CONTACTS } from "@/lib/contacts";
 import { useLocale } from "@/lib/locale-context";
-import { PRODUCTS } from "@/lib/products";
 
-export default function Hero() {
+// products приходит из app/page.jsx: 27 товаров из кода + добавленные через /admin
+export default function Hero({ products }) {
   const { t, money } = useLocale();
 
-  const minPrice = Math.min(...PRODUCTS.filter((p) => p.category !== "kids").map((p) => p.price));
-  const featured = PRODUCTS.find((p) => p.id === "phantom-ag") ?? PRODUCTS[0];
+  const minPrice = Math.min(...products.filter((p) => p.category !== "kids").map((p) => p.price));
+  const featured = products.find((p) => p.id === "phantom-ag") ?? products[0];
 
   return (
     <section className="relative overflow-hidden">
@@ -69,7 +69,7 @@ export default function Hero() {
 
             <dl className="mt-8 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-6 sm:mt-12 sm:gap-4 sm:pt-8">
               {[
-                [String(PRODUCTS.length), t("hero.stat.models")],
+                [String(products.length), t("hero.stat.models")],
                 ["36–45", t("hero.stat.sizes")],
                 [t("hero.stat.shipValue"), t("hero.stat.ship")],
               ].map(([value, label]) => (

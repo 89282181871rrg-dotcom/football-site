@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/locale-context";
 import Lightbox from "./Lightbox";
 
 export default function ProductCard({ product }) {
-  const { add, setOpen } = useCart();
+  const { add, setOpen, items, setQty } = useCart();
   const { t, p, money } = useLocale();
   const [size, setSize] = useState(product.sizes[0]);
   const [justAdded, setJustAdded] = useState(false);
@@ -15,6 +15,10 @@ export default function ProductCard({ product }) {
   const groupId = useId();
 
   const images = product.images ?? [product.image];
+
+  // Товар уже в корзине — вместо «В корзину» показываем счётчик,
+  // как в больших магазинах. Смена размера считается отдельной позицией.
+  const inCart = items.find((i) => i.key === `${product.id}__${size}`);
   const hasSizes = !(product.sizes.length === 1 && product.sizes[0] === "ONE");
 
   // Описания хранятся по-русски, здесь подставляется перевод (lib/locales)
@@ -129,25 +133,58 @@ export default function ProductCard({ product }) {
           )}
 
           <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:gap-1.5 sm:pt-5">
-            <button
-              type="button"
-              onClick={handleAdd}
-              className={`label flex min-h-12 flex-1 items-center justify-center rounded-xl px-4 font-bold text-ink transition-colors duration-200 ${
-                justAdded ? "added-pulse bg-volt-dim" : "bg-volt hover:bg-volt-dim"
-              }`}
-            >
-              {justAdded ? t("card.added") : t("card.add")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                add({ ...product, image: images[0] }, size);
-                setOpen(true);
-              }}
-              className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-300 hover:border-volt hover:text-ink"
-            >
-              {t("card.buy")}
-            </button>
+            {inCart ? (
+              <>
+                <div className="flex flex-1 items-center justify-between rounded-xl bg-volt text-ink">
+                  <button
+                    type="button"
+                    onClick={() => setQty(inCart.key, inCart.qty - 1)}
+                    aria-label="−"
+                    className="flex h-12 w-11 items-center justify-center text-xl font-bold"
+                  >
+                    −
+                  </button>
+                  <span className="tnum text-base font-bold">{inCart.qty}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQty(inCart.key, inCart.qty + 1)}
+                    aria-label="+"
+                    className="flex h-12 w-11 items-center justify-center text-xl font-bold"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(true)}
+                  className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-volt px-4 font-bold text-volt transition-colors duration-300 hover:text-ink"
+                >
+                  {t("card.inCart")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  className={`label flex min-h-12 flex-1 items-center justify-center rounded-xl px-4 font-bold text-ink transition-colors duration-200 ${
+                    justAdded ? "added-pulse bg-volt-dim" : "bg-volt hover:bg-volt-dim"
+                  }`}
+                >
+                  {justAdded ? t("card.added") : t("card.add")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    add({ ...product, image: images[0] }, size);
+                    setOpen(true);
+                  }}
+                  className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-300 hover:border-volt hover:text-ink"
+                >
+                  {t("card.buy")}
+                </button>
+              </>
+            )}
           </div>
 
           <p aria-live="polite" className="sr-only">

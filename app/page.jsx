@@ -9,19 +9,26 @@ import Review from "@/components/Review";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import Reveal from "@/components/Reveal";
+import { getAllProducts } from "@/lib/catalog";
 
-export default function Home() {
+// Каталог может пополняться через /admin в любой момент, поэтому страница
+// собирается заново на каждый заход, а не кэшируется целиком.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const products = await getAllProducts();
+
   return (
     <>
       <Header />
       <main id="main">
-        <Hero />
+        <Hero products={products} />
         <Marquee />
         <Reveal>
           <Features />
         </Reveal>
         <Reveal>
-          <Catalog />
+          <Catalog products={products} />
         </Reveal>
         <Marquee />
         <Reveal>

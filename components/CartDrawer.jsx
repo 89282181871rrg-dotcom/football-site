@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useLocale } from "@/lib/locale-context";
 import { CONTACTS } from "@/lib/contacts";
+import { orderLink } from "@/lib/whatsapp";
 
 export default function CartDrawer() {
   const { items, setQty, remove, clear, total, isOpen, setOpen } = useCart();
   const { t, lang, currency, money, country } = useLocale();
-  const [status, setStatus] = useState("idle"); // idle | sending | done | error
+  const [status, setStatus] = useState("idle"); // idle | opening | error
+  const [chatUrl, setChatUrl] = useState("");
   const [errors, setErrors] = useState({});
   const panelRef = useRef(null);
   const nameRef = useRef(null);
@@ -27,7 +29,7 @@ export default function CartDrawer() {
 
   if (!isOpen) return null;
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const name = String(form.get("name") || "").trim();
@@ -46,23 +48,31 @@ export default function CartDrawer() {
       return;
     }
 
-    setStatus("sending");
+    const order = {
+      name, phone, country, city, comment,
+      items, total, lang, currency,
+      totalShown: money(total),
+      origin: window.location.origin,
+    };
+
+    // Запасная запись заказа: если в .env настроены таблица или пуш, они
+    // сработают. sendBeacon переживает уход со страницы, обычный fetch — нет.
     try {
-      const res = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name, phone, country, city, comment,
-          items, total, lang, currency,
-          totalShown: money(total),
-        }),
-      });
-      if (!res.ok) throw new Error("bad response");
-      setStatus("done");
-      clear();
+      const blob = new Blob([JSON.stringify(order)], { type: "application/json" });
+      navigator.sendBeacon?.("/api/order", blob);
     } catch {
-      setStatus("error");
+      // не критично: заказ всё равно уходит в WhatsApp
     }
+
+    // Ссылку показываем на экране: если переход заблокирован, покупатель
+    // нажмёт её сам и заказ не потеряется
+    const url = orderLink(order);
+    setChatUrl(url);
+    setStatus("opening");
+    window.location.href = url;
+
+    // Корзину намеренно не очищаем: мы не знаем, отправил ли он сообщение.
+    // Вернётся — товары на месте.
   };
 
   const field =
@@ -96,14 +106,22 @@ export default function CartDrawer() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
-          {status === "done" ? (
+          {status === "opening" ? (
             <div className="py-10">
-              <p className="display-md">{t("cart.done")}</p>
-              <p className="mt-5 text-sm leading-relaxed text-muted">{t("cart.doneText")}</p>
+              <p className="display-md">{t("cart.waOpening")}</p>
+              <p className="mt-5 text-sm leading-relaxed text-muted">{t("cart.waHint")}</p>
+              <a
+                href={chatUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="label mt-6 flex min-h-12 items-center justify-center rounded-xl bg-volt px-5 font-bold text-ink"
+              >
+                {t("cart.waManual")}
+              </a>
               <p className="mt-6 text-sm text-muted">{t("cart.urgent")}</p>
               <a
                 href={CONTACTS.phoneHref}
-                className="label tnum mt-2 flex min-h-12 items-center justify-center rounded-xl bg-volt px-5 font-bold text-ink"
+                className="label tnum mt-2 flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-5 font-bold"
               >
                 {CONTACTS.phoneDisplay}
               </a>
@@ -173,7 +191,7 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {items.length > 0 && status !== "done" && (
+        {items.length > 0 && status !== "opening" && (
           <form onSubmit={submit} noValidate className="max-h-[72vh] overflow-y-auto px-4 pb-5 pt-4 sm:max-h-[62vh] sm:px-5">
             <div className="mb-5 flex items-baseline justify-between">
               <span className="label text-muted">{t("cart.total")}</span>
@@ -297,11 +315,12 @@ export default function CartDrawer() {
 
             <button
               type="submit"
-              disabled={status === "sending"}
               className="label mt-6 flex min-h-12 w-full items-center justify-center rounded-xl bg-volt font-bold text-ink transition-opacity duration-200 disabled:opacity-50"
             >
-              {status === "sending" ? t("cart.sending") : t("cart.submit")}
+              {t("cart.submit")}
             </button>
+
+            <p className="label mt-3 text-muted">{t("cart.waHint")}</p>
 
             <p className="label mt-4 text-muted">{t("cart.consent")}</p>
           </form>

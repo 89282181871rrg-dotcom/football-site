@@ -2,23 +2,24 @@
 
 import { useState } from "react";
 import ProductCard from "./ProductCard";
-import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import { CATEGORIES } from "@/lib/products";
 import { useLocale } from "@/lib/locale-context";
 
-export default function Catalog() {
+// products приходит из app/page.jsx: 27 товаров из кода + добавленные через /admin
+export default function Catalog({ products }) {
   const [active, setActive] = useState("all");
   const { t } = useLocale();
 
   const list =
-    active === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.category === active);
+    active === "all" ? products : products.filter((p) => p.category === active);
   const countFor = (id) =>
-    id === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === id).length;
+    id === "all" ? products.length : products.filter((p) => p.category === id).length;
 
   return (
     <section id="catalog" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:py-28">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
         <h2 className="display-md">
-          {t("catalog.title")} <span className="tnum text-volt">{PRODUCTS.length}</span>
+          {t("catalog.title")} <span className="tnum text-volt">{products.length}</span>
         </h2>
         <p className="max-w-xs text-sm text-muted">{t("catalog.note")}</p>
       </div>
