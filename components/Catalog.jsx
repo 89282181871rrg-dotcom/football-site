@@ -8,12 +8,18 @@ import { useLocale } from "@/lib/locale-context";
 // products приходит из app/page.jsx: 27 товаров из кода + добавленные через /admin
 export default function Catalog({ products }) {
   const [active, setActive] = useState("all");
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
 
   const list =
     active === "all" ? products : products.filter((p) => p.category === active);
   const countFor = (id) =>
     id === "all" ? products.length : products.filter((p) => p.category === id).length;
+
+  // Товар из /admin без готового перевода DeepL (ключ не настроен) —
+  // подсказываем, что страницу можно перевести браузером. addedAt есть
+  // только у товаров из админки, у обычных 27 его нет
+  const showTranslateHint =
+    lang !== "ru" && products.some((p) => p.addedAt && !p.translations?.[lang]);
 
   return (
     <section id="catalog" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:py-28">
@@ -23,6 +29,10 @@ export default function Catalog({ products }) {
         </h2>
         <p className="max-w-xs text-sm text-muted">{t("catalog.note")}</p>
       </div>
+
+      {showTranslateHint && (
+        <p className="mt-3 max-w-md text-xs text-muted/80">{t("catalog.translateHint")}</p>
+      )}
 
       <div
         role="tablist"

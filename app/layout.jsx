@@ -1,4 +1,5 @@
 import { Inter, Oswald } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import { LocaleProvider } from "@/lib/locale-context";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
           <SkipLink />
           <CartProvider>{children}</CartProvider>
         </LocaleProvider>
+        <Analytics />
       </body>
     </html>
   );

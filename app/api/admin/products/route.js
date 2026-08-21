@@ -10,6 +10,7 @@ import {
   uploadProductPhoto,
   deleteProductPhotos,
 } from "@/lib/blob-store";
+import { translateProductFields } from "@/lib/translate";
 import { CATEGORIES } from "@/lib/products";
 
 const CATEGORY_IDS = new Set(CATEGORIES.map((c) => c.id));
@@ -86,6 +87,19 @@ export async function POST(request) {
     );
   }
 
+  // Переводим подпись/пометку/комментарий на остальные языки сайта.
+  // Название (бренд+модель) не переводим — так же, как у остальных
+  // 27 товаров. Если DEEPL_API_KEY не задан или DeepL недоступен —
+  // translations останется пустым, и товар покажется по-русски,
+  // как раньше (см. lib/translate.js).
+  let translations;
+  try {
+    const t = await translateProductFields({ subtitle, badge, note });
+    if (t && Object.keys(t).length) translations = t;
+  } catch (err) {
+    console.warn("[перевод] Пропущен из-за ошибки:", err.message);
+  }
+
   const product = {
     id,
     title,
@@ -96,6 +110,7 @@ export async function POST(request) {
     note: note || undefined,
     sizes,
     images,
+    translations,
     addedAt: new Date().toISOString(),
   };
 

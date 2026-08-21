@@ -7,7 +7,7 @@ import Lightbox from "./Lightbox";
 
 export default function ProductCard({ product }) {
   const { add, setOpen, items, setQty } = useCart();
-  const { t, p, money } = useLocale();
+  const { t, pf, money } = useLocale();
   const [size, setSize] = useState(product.sizes[0]);
   const [justAdded, setJustAdded] = useState(false);
   const [photo, setPhoto] = useState(0);
@@ -21,10 +21,12 @@ export default function ProductCard({ product }) {
   const inCart = items.find((i) => i.key === `${product.id}__${size}`);
   const hasSizes = !(product.sizes.length === 1 && product.sizes[0] === "ONE");
 
-  // Описания хранятся по-русски, здесь подставляется перевод (lib/locales)
-  const subtitle = p(product.subtitle);
-  const note = p(product.note);
-  const badge = p(product.badge);
+  // Описания хранятся по-русски, здесь подставляется перевод: у обычных
+  // товаров — из словаря (lib/locales), у товаров из /admin — готовый
+  // перевод DeepL, если он есть (lib/translate.js)
+  const subtitle = pf(product, "subtitle");
+  const note = pf(product, "note");
+  const badge = pf(product, "badge");
 
   const handleAdd = () => {
     add({ ...product, image: images[0] }, size);
@@ -89,7 +91,7 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <div className="flex flex-1 flex-col p-2.5 sm:p-4">
           <h3 className="title text-base sm:text-lg">{product.title}</h3>
 
           {subtitle && (
@@ -105,13 +107,13 @@ export default function ProductCard({ product }) {
           )}
 
           {hasSizes && (
-            <fieldset className="mt-3 sm:mt-4">
+            <fieldset className="mt-2.5 sm:mt-4">
               <legend className="label text-muted">{t("card.size")}</legend>
-              <div className="mt-2 flex flex-wrap gap-1 sm:gap-1.5">
+              <div className="mt-1.5 flex flex-wrap gap-1 sm:mt-2 sm:gap-1.5">
                 {product.sizes.map((s) => (
                   <label
                     key={s}
-                    className={`flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg px-2 text-sm font-bold transition-colors duration-200 ${
+                    className={`flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-lg px-1.5 text-sm font-bold transition-colors duration-200 sm:h-11 sm:min-w-11 sm:px-2 ${
                       size === s
                         ? "bg-volt text-ink"
                         : "border border-line-strong text-muted hover:border-volt hover:text-text"
@@ -132,15 +134,15 @@ export default function ProductCard({ product }) {
             </fieldset>
           )}
 
-          <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:gap-1.5 sm:pt-5">
+          <div className="mt-auto flex flex-col gap-1.5 pt-3 sm:flex-row sm:gap-1.5 sm:pt-5">
             {inCart ? (
               <>
-                <div className="flex flex-1 items-center justify-between rounded-xl bg-volt text-ink">
+                <div className="flex h-11 flex-1 items-center justify-between rounded-xl bg-volt text-ink sm:h-12">
                   <button
                     type="button"
                     onClick={() => setQty(inCart.key, inCart.qty - 1)}
                     aria-label="−"
-                    className="flex h-12 w-11 items-center justify-center text-xl font-bold"
+                    className="flex h-11 w-11 items-center justify-center text-xl font-bold sm:h-12"
                   >
                     −
                   </button>
@@ -149,7 +151,7 @@ export default function ProductCard({ product }) {
                     type="button"
                     onClick={() => setQty(inCart.key, inCart.qty + 1)}
                     aria-label="+"
-                    className="flex h-12 w-11 items-center justify-center text-xl font-bold"
+                    className="flex h-11 w-11 items-center justify-center text-xl font-bold sm:h-12"
                   >
                     +
                   </button>
@@ -157,7 +159,7 @@ export default function ProductCard({ product }) {
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-                  className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-volt px-4 font-bold text-volt transition-colors duration-300 hover:text-ink"
+                  className="btn-sweep label flex min-h-11 items-center justify-center rounded-xl border border-volt px-4 font-bold text-volt transition-colors duration-300 hover:text-ink sm:min-h-12"
                 >
                   {t("card.inCart")}
                 </button>
@@ -167,7 +169,7 @@ export default function ProductCard({ product }) {
                 <button
                   type="button"
                   onClick={handleAdd}
-                  className={`label flex min-h-12 flex-1 items-center justify-center rounded-xl px-4 font-bold text-ink transition-colors duration-200 ${
+                  className={`label flex min-h-11 flex-1 items-center justify-center rounded-xl px-4 font-bold text-ink transition-colors duration-200 sm:min-h-12 ${
                     justAdded ? "added-pulse bg-volt-dim" : "bg-volt hover:bg-volt-dim"
                   }`}
                 >
@@ -179,7 +181,7 @@ export default function ProductCard({ product }) {
                     add({ ...product, image: images[0] }, size);
                     setOpen(true);
                   }}
-                  className="btn-sweep label flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-300 hover:border-volt hover:text-ink"
+                  className="btn-sweep label flex min-h-11 items-center justify-center rounded-xl border border-line-strong px-4 font-bold transition-colors duration-300 hover:border-volt hover:text-ink sm:min-h-12"
                 >
                   {t("card.buy")}
                 </button>

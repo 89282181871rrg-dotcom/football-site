@@ -139,6 +139,7 @@ export default function CartDrawer() {
               </button>
             </div>
           ) : (
+            <>
             <ul className="space-y-6">
               {items.map((i) => (
                 <li key={i.key} className="flex gap-4">
@@ -188,11 +189,8 @@ export default function CartDrawer() {
                 </li>
               ))}
             </ul>
-          )}
-        </div>
 
-        {items.length > 0 && status !== "opening" && (
-          <form onSubmit={submit} noValidate className="max-h-[72vh] overflow-y-auto px-4 pb-5 pt-4 sm:max-h-[62vh] sm:px-5">
+          <form onSubmit={submit} noValidate className="mt-6">
             <div className="mb-5 flex items-baseline justify-between">
               <span className="label text-muted">{t("cart.total")}</span>
               <span className="tnum display-md text-volt">{money(total)}</span>
@@ -324,7 +322,9 @@ export default function CartDrawer() {
 
             <p className="label mt-4 text-muted">{t("cart.consent")}</p>
           </form>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
