@@ -19,3 +19,6 @@ _backup-photos-original
 
 # Исходные материалы целиком
 материалы
+
+.vercel
+.env*
