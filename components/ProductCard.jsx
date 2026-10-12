@@ -22,8 +22,7 @@ export default function ProductCard({ product }) {
   const hasSizes = !(product.sizes.length === 1 && product.sizes[0] === "ONE");
 
   // Описания хранятся по-русски, здесь подставляется перевод: у обычных
-  // товаров — из словаря (lib/locales), у товаров из /admin — готовый
-  // перевод DeepL, если он есть (lib/translate.js)
+  // товаров — из словаря (lib/locales), если там есть такая фраза
   const subtitle = pf(product, "subtitle");
   const note = pf(product, "note");
   const badge = pf(product, "badge");

@@ -3,12 +3,13 @@
 import { CONTACTS } from "@/lib/contacts";
 import { useLocale } from "@/lib/locale-context";
 
-// products приходит из app/page.jsx: 27 товаров из кода + добавленные через /admin
+// products приходит из app/page.jsx: товары из МойСклада
 export default function Hero({ products }) {
   const { t, money } = useLocale();
 
-  const minPrice = Math.min(...products.filter((p) => p.category !== "kids").map((p) => p.price));
-  const featured = products.find((p) => p.id === "phantom-ag") ?? products[0];
+  const prices = products.map((p) => p.price).filter(Boolean);
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const featured = products[0];
 
   return (
     <section className="relative overflow-hidden">
@@ -81,6 +82,7 @@ export default function Hero({ products }) {
             </dl>
           </div>
 
+          {featured && (
           <div
             className="relative"
             style={{ animation: "fade-up .9s var(--ease-out-soft) .3s both" }}
@@ -104,6 +106,7 @@ export default function Hero({ products }) {
               <p className="tnum display-md text-volt">{money(featured.price)}</p>
             </div>
           </div>
+          )}
         </div>
       </div>
     </section>

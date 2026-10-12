@@ -11,7 +11,7 @@ import CartDrawer from "@/components/CartDrawer";
 import Reveal from "@/components/Reveal";
 import { getAllProducts } from "@/lib/catalog";
 
-// Каталог может пополняться через /admin в любой момент, поэтому страница
+// Каталог меняется в МойСкладе в любой момент, поэтому страница
 // собирается заново на каждый заход, а не кэшируется целиком.
 export const dynamic = "force-dynamic";
 

@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Видеофон на весь сайт.
  *
- * ЧТОБЫ ПОМЕНЯТЬ РОЛИК: положи файл в public/video/ и поменяй SRC ниже.
- * Путь обязательно вида "/video/имя.mp4" — со слэшем в начале и расширением.
+ * ЧТОБЫ ПОМЕНЯТЬ РОЛИКИ: положи файлы в public/video/ и поправь список ниже.
+ * Ролики играют по очереди, по кругу. Путь вида "/video/имя.mp4".
  */
-const SRC = "/video/lv_0_20260809184654.mp4";
-const SRC_WEBM = "";
+const PLAYLIST = [
+  "/video/lv_0_20260809184654.mp4", // Ла Лига
+  "/video/apl-logos.mp4",           // эмблемы клубов АПЛ
+];
 const POSTER = "";
 
 /** Затемнение поверх видео. Больше — темнее фон и лучше читается текст. */
@@ -30,6 +32,9 @@ const ZOOM_PHONE = 1;     // телефон
 
 export default function VideoBackground() {
   const videoRef = useRef(null);
+  const [index, setIndex] = useState(0);
+  const src = PLAYLIST[index];
+  const next = () => setIndex((i) => (i + 1) % PLAYLIST.length);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -52,7 +57,7 @@ export default function VideoBackground() {
       document.removeEventListener("visibilitychange", start);
       window.removeEventListener("touchstart", start);
     };
-  }, []);
+  }, [src]); // новый ролик из списка — новый <video>, запускаем заново
 
   return (
     <div
@@ -61,17 +66,20 @@ export default function VideoBackground() {
       style={{ zIndex: -1 }}
     >
       <video
+        key={src}
         ref={videoRef}
         autoPlay
         muted
-        loop
+        loop={PLAYLIST.length === 1}
+        onEnded={next}
         playsInline
         preload="auto"
         {...(POSTER ? { poster: POSTER } : {})}
         disablePictureInPicture
-        onError={() =>
-          console.error("[фон] Видео не загрузилось:", SRC)
-        }
+        onError={() => {
+          console.error("[фон] Видео не загрузилось:", src);
+          if (PLAYLIST.length > 1) next();
+        }}
         className="bg-video absolute inset-0 h-full w-full"
         style={{
           objectFit: "cover",
@@ -84,8 +92,7 @@ export default function VideoBackground() {
           "--zoom-desktop": ZOOM,
         }}
       >
-        {SRC_WEBM && <source src={SRC_WEBM} type="video/webm" />}
-        <source src={SRC} type="video/mp4" />
+        <source src={src} type="video/mp4" />
       </video>
 
       {/* Затемнение для читаемости текста */}

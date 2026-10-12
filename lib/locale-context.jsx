@@ -86,8 +86,8 @@ export function LocaleProvider({ children }) {
       setCurrency,
       t: (key, vars) => translate(dict, key, vars),
       p: (text) => phrase(dict, text),
-      // Текст товара: сперва готовый перевод (товары из /admin, см.
-      // lib/translate.js), иначе — как раньше, через словарь phrases.
+      // Текст товара: сперва готовый перевод, если он есть у товара,
+      // иначе — через словарь phrases.
       pf: (product, field) => product?.translations?.[lang]?.[field] || phrase(dict, product?.[field]),
       faq: faqOf(dict),
       country: dict?.country ?? "",
