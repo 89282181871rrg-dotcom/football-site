@@ -40,7 +40,7 @@ export default function ProductCard({ product }) {
           <button
             type="button"
             onClick={() => setZoom(true)}
-            className="block h-full w-full cursor-zoom-in"
+            className="block h-full w-full cursor-zoom-in bg-white"
           >
             <img
               src={images[photo]}
@@ -48,15 +48,10 @@ export default function ProductCard({ product }) {
               width={800}
               height={1000}
               loading="lazy"
-              className="h-full w-full object-cover opacity-[0.92] transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-hover:opacity-100"
+              className="h-full w-full object-contain p-2"
             />
             <span className="sr-only">{t("card.openPhotos")}</span>
           </button>
-
-          <div
-            aria-hidden="true"
-            className="photo-fade pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
-          />
 
           {badge && (
             <span className="label pointer-events-none absolute left-0 top-0 rounded-br-xl bg-volt px-2.5 py-1.5 font-bold text-ink">
@@ -84,7 +79,7 @@ export default function ProductCard({ product }) {
                   i === photo ? "border-volt" : "border-transparent opacity-55 hover:opacity-100"
                 }`}
               >
-                <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+                <img src={src} alt="" loading="lazy" className="h-full w-full bg-white object-contain" />
               </button>
             ))}
           </div>

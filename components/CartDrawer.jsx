@@ -148,7 +148,7 @@ export default function CartDrawer() {
                     alt=""
                     width={64}
                     height={80}
-                    className="h-20 w-16 rounded-lg object-cover"
+                    className="h-20 w-16 rounded-lg bg-white object-contain"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="title truncate text-base">{i.title}</p>

@@ -119,7 +119,7 @@ export default function Lightbox({ images, index, title, onClose, onIndex }) {
               <img
                 src={src}
                 alt=""
-                className="h-full w-full object-cover"
+                className="h-full w-full bg-white object-contain"
                 loading="lazy"
               />
               <span className="sr-only">{t("lb.photo", { n: i + 1 })}</span>

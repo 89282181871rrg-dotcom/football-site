@@ -94,7 +94,7 @@ export default function Hero({ products }) {
                 width={900}
                 height={1125}
                 fetchPriority="high"
-                className="h-full w-full object-cover opacity-90"
+                className="h-full w-full bg-white object-contain p-3"
               />
               <span className="label absolute left-0 top-0 rounded-br-xl bg-volt px-3 py-2 font-bold text-ink">
                 {t("hero.hit")}
