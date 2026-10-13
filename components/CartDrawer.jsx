@@ -281,12 +281,14 @@ export default function CartDrawer() {
 
               <div>
                 <label htmlFor="comment" className="label mb-1 block text-muted">
-                  {t("cart.comment")}
+                  {t("cart.comment")}{" "}
+                  <span className="normal-case opacity-80">({t("cart.commentHint")})</span>
                 </label>
                 <textarea
                   id="comment"
                   name="comment"
-                  rows={2}
+                  rows={3}
+                  placeholder={t("cart.commentHint")}
                   className="w-full rounded-xl border border-line-strong bg-ink px-4 py-3 text-base text-text focus:border-volt"
                 />
               </div>
