@@ -12,6 +12,12 @@ echo "== 1. Системные пакеты"
 apt-get update -y
 apt-get install -y curl git ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https
 
+echo "== 1b. Подкачка 2 ГБ (на сервере 1 ГБ памяти, сборке сайта нужно больше)"
+if [ ! -f /swapfile ]; then
+  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+  echo "/swapfile none swap sw 0 0" >> /etc/fstab
+fi
+
 echo "== 2. Node.js 24"
 if ! node -v 2>/dev/null | grep -q '^v24'; then
   curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
