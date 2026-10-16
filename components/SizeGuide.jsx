@@ -33,6 +33,17 @@ const KIDS = [
   ["18", "16+", "174–180", "90+"],
 ];
 
+// Детские костюмы: размер, возраст, рост, длина кофты, грудь, длина брюк (сетка поставщика)
+const KIDS_SUITS = [
+  ["16", "3–4", "95–105", "42", "66", "31"],
+  ["18", "4–5", "105–115", "45", "70", "33"],
+  ["20", "6–7", "115–125", "48", "73", "35"],
+  ["22", "7–8", "125–135", "50", "76", "37"],
+  ["24", "8–9", "135–145", "55", "82", "39"],
+  ["26", "10–11", "145–155", "59", "88", "41"],
+  ["28", "12–14", "155–165", "62", "94", "43"],
+];
+
 export default function SizeGuide() {
   const { t } = useLocale();
   const [tab, setTab] = useState("shoes");
@@ -50,6 +61,13 @@ export default function SizeGuide() {
       rows: KIDS,
       heads: [t("size.size"), t("size.age"), t("size.height"), t("size.chest")],
     },
+    kidsSuits: {
+      rows: KIDS_SUITS,
+      heads: [
+        t("size.size"), t("size.age"), t("size.height"),
+        t("size.shirtLen"), t("size.chest"), t("size.pantsLen"),
+      ],
+    },
   };
   const { rows: ROWS, heads } = TABLES[tab];
 
@@ -63,7 +81,7 @@ export default function SizeGuide() {
       </div>
 
       <div role="tablist" aria-label={t("size.title")} className="mt-6 flex flex-wrap gap-2">
-        {["shoes", "adult", "kids"].map((id) => (
+        {["shoes", "adult", "kids", "kidsSuits"].map((id) => (
           <button
             key={id}
             role="tab"
@@ -83,7 +101,7 @@ export default function SizeGuide() {
 
       <div className="mt-6 grid gap-8 sm:mt-8 sm:gap-10 lg:grid-cols-[1.3fr_1fr]">
         <div className="overflow-x-auto rounded-2xl border border-white/10 bg-ink/90 backdrop-blur-md">
-          <table className="w-full min-w-[480px] border-collapse text-left">
+          <table className="w-full min-w-[560px] border-collapse text-left">
             <caption className="sr-only">{t("size.title")}</caption>
             <thead>
               <tr className="bg-surface">
