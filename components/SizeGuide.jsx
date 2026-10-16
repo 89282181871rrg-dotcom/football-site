@@ -26,13 +26,11 @@ const ADULT = [
 
 // Детская одежда: размер на бирке, возраст, рост, обхват груди
 const KIDS = [
-  ["16", "3–4", "95–105", "56–58"],
-  ["18", "4–5", "105–115", "58–60"],
-  ["20", "5–6", "115–125", "60–64"],
-  ["22", "6–7", "125–135", "64–68"],
-  ["24", "8–9", "135–145", "68–72"],
-  ["26", "10–11", "145–155", "72–76"],
-  ["28", "12–13", "155–165", "76–80"],
+  ["10", "9–10", "134–140", "64–68"],
+  ["12", "11–12", "146–152", "68–72"],
+  ["14", "13–14", "158–164", "72–78"],
+  ["16", "15–16", "164–170", "78–84"],
+  ["18", "17–18", "170–176", "84–88"],
 ];
 
 export default function SizeGuide() {
@@ -84,13 +82,13 @@ export default function SizeGuide() {
       </div>
 
       <div className="mt-6 grid gap-8 sm:mt-8 sm:gap-10 lg:grid-cols-[1.3fr_1fr]">
-        <div className="overflow-x-auto rounded-2xl">
+        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-ink/90 backdrop-blur-md">
           <table className="w-full min-w-[480px] border-collapse text-left">
             <caption className="sr-only">{t("size.title")}</caption>
             <thead>
-              <tr className="bg-surface/78 backdrop-blur-sm">
+              <tr className="bg-surface">
                 {heads.map((h) => (
-                  <th key={h} scope="col" className="label px-4 py-3 text-muted">
+                  <th key={h} scope="col" className="label px-4 py-3 text-text/80">
                     {h}
                   </th>
                 ))}
@@ -98,12 +96,12 @@ export default function SizeGuide() {
             </thead>
             <tbody>
               {ROWS.map((row, i) => (
-                <tr key={row[0]} className={i % 2 ? "bg-surface/35" : undefined}>
+                <tr key={row[0]} className={i % 2 ? "bg-surface/60" : undefined}>
                   <th scope="row" className="tnum title px-4 py-3 text-left text-lg text-volt">
                     {row[0]}
                   </th>
                   {row.slice(1).map((cell, j) => (
-                    <td key={j} className="tnum px-4 py-3 text-sm text-muted">
+                    <td key={j} className="tnum px-4 py-3 text-sm text-text">
                       {cell}
                     </td>
                   ))}
