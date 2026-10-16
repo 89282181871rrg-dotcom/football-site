@@ -10,7 +10,7 @@ REPO=https://github.com/89282181871rrg-dotcom/football-site.git
 
 echo "== 1. Системные пакеты"
 apt-get update -y
-apt-get install -y curl git ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https
+apt-get install -y cron curl git ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https
 
 echo "== 1b. Подкачка 2 ГБ (на сервере 1 ГБ памяти, сборке сайта нужно больше)"
 if [ ! -f /swapfile ]; then
@@ -72,6 +72,7 @@ fi
 systemctl reload caddy || systemctl restart caddy
 
 echo "== 8. Автообновление из GitHub каждые 5 минут"
+systemctl enable --now cron
 echo "*/5 * * * * root bash $APP_DIR/deploy/update.sh >> /var/log/futbolki-update.log 2>&1" > /etc/cron.d/futbolki-update
 
 echo "== Готово. Проверка:"
