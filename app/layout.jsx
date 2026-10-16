@@ -29,7 +29,7 @@ const oswald = Oswald({
 export const metadata = {
   title: "Futbolki Russia — бутсы, шиповки, перчатки · Football boots shop",
   description:
-    "Футбольные бутсы, шиповки и сороконожки Nike, Adidas, Puma, Mizuno, New Balance. Вратарские перчатки из немецкого латекса, мячи. Размеры 36–45, отправка в день заказа, доставка по всему миру. Football boots, turf shoes, goalkeeper gloves and balls — worldwide shipping.",
+    "Футбольные бутсы, шиповки и сороконожки Nike, Adidas, Puma, Mizuno, New Balance. Вратарские перчатки из немецкого латекса, мячи. Размеры 28–48, отправка в день заказа, доставка по всему миру. Football boots, turf shoes, goalkeeper gloves and balls — worldwide shipping.",
   openGraph: {
     title: "Futbolki Russia — всё для футбола · Everything for football",
     description:

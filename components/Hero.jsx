@@ -71,7 +71,7 @@ export default function Hero({ products }) {
             <dl className="mt-8 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-6 sm:mt-12 sm:gap-4 sm:pt-8">
               {[
                 [String(products.length), t("hero.stat.models")],
-                ["36–45", t("hero.stat.sizes")],
+                ["28–48", t("hero.stat.sizes")],
                 [t("hero.stat.shipValue"), t("hero.stat.ship")],
               ].map(([value, label]) => (
                 <div key={label}>
