@@ -53,6 +53,12 @@ export default function ProductCard({ product }) {
             <span className="sr-only">{t("card.openPhotos")}</span>
           </button>
 
+          {product.oldPrice && (
+            <span className="label pointer-events-none absolute bottom-0 left-0 rounded-tr-xl bg-red-600 px-2.5 py-1.5 font-bold text-white">
+              −{Math.round((1 - product.price / product.oldPrice) * 100)}%
+            </span>
+          )}
+
           {badge && (
             <span className="label pointer-events-none absolute left-0 top-0 rounded-br-xl bg-volt px-2.5 py-1.5 font-bold text-ink">
               {badge}
@@ -92,7 +98,12 @@ export default function ProductCard({ product }) {
             <p className="mt-1 text-[0.8rem] leading-snug text-muted sm:mt-1.5 sm:text-sm">{subtitle}</p>
           )}
 
-          <p className="tnum display-md mt-2 text-volt sm:mt-3">{money(product.price)}</p>
+          <div className="mt-2 flex flex-wrap items-baseline gap-x-3 sm:mt-3">
+            <p className="tnum display-md text-volt">{money(product.price)}</p>
+            {product.oldPrice && (
+              <p className="tnum text-base text-muted line-through">{money(product.oldPrice)}</p>
+            )}
+          </div>
 
           {note && (
             <p className="mt-2 rounded-r-lg border-l-2 border-volt bg-ink/40 px-2.5 py-1.5 text-[0.7rem] leading-relaxed text-muted sm:mt-3 sm:px-3 sm:py-2 sm:text-xs">
